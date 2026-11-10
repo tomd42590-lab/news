@@ -46,27 +46,29 @@ self.addEventListener("fetch", event => {
     return;
   }
 
-  if (url.pathname.endsWith("/data/news.json")) {
+    if (url.pathname.endsWith("/data/news.json")) {
+    const cacheKey = new Request(url.origin + url.pathname);
+
     event.respondWith(
       fetch(request)
         .then(response => {
           if (response.ok) {
             const copy = response.clone();
             caches.open(CACHE_NAME).then(cache => {
-              cache.put(request, copy);
+              cache.put(cacheKey, copy);
             });
           }
           return response;
         })
         .catch(async () => {
-          const cached = await caches.match(request);
+          const cached = await caches.match(cacheKey);
           return cached || new Response("新闻暂时无法加载", {
             status: 503
           });
         })
     );
     return;
-  }
+    }
 
   // 其他静态文件优先使用缓存
   event.respondWith(
