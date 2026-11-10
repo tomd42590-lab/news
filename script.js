@@ -190,3 +190,15 @@ document.getElementById("today").textContent =
 
 // 加载新闻
 loadNews();
+// 注册 Service Worker
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("./service-worker.js")
+      .then(registration => {
+        console.log("NewsHub 离线缓存已启用：", registration.scope);
+      })
+      .catch(error => {
+        console.error("Service Worker 注册失败：", error);
+      });
+  });
+}
