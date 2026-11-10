@@ -46,7 +46,7 @@ self.addEventListener("fetch", event => {
     return;
   }
 
-    if (url.pathname.endsWith("/data/news.json")) {
+      if (url.pathname.endsWith("/data/news.json")) {
     const cacheKey = new Request(url.origin + url.pathname);
 
     event.respondWith(
@@ -66,6 +66,9 @@ self.addEventListener("fetch", event => {
             status: 503
           });
         })
+    );
+    return;
+  }
     );
     return;
     }
