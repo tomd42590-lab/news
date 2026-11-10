@@ -10,10 +10,20 @@ from email.utils import parsedate_to_datetime
 
 # 新闻源：名称、RSS地址、网站分类
 SOURCES = [
-    ("中国新闻网", "https://www.chinanews.com.cn/rss/scroll-news.xml", "国内"),
+    # 国内新闻
+    ("中国新闻网", "https://www.chinanews.com.cn/rss/china.xml", "国内"),
+
+    # 国际新闻
     ("中国新闻网", "https://www.chinanews.com.cn/rss/world.xml", "国际"),
+
+    # 经济新闻
     ("中国新闻网", "https://www.chinanews.com.cn/rss/finance.xml", "经济"),
+
+    # 科技新闻
     ("新浪科技", "https://rss.sina.com.cn/news/allnews/tech.xml", "科技"),
+
+    # 社会新闻
+    ("中国新闻网", "https://www.chinanews.com.cn/rss/society.xml", "社会"),
 ]
 
 def clean_text(text):
