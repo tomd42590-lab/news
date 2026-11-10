@@ -20,7 +20,7 @@ SOURCES = [
     ("中国新闻网", "https://www.chinanews.com.cn/rss/finance.xml", "经济"),
 
     # 科技新闻
-    ("新浪科技", "https://rss.sina.com.cn/news/allnews/tech.xml", "科技"),
+    ("新浪科技", "https://rss.sina.com.cn/tech/rollnews.xml", "科技"),
 
     # 社会新闻
     ("中国新闻网", "https://www.chinanews.com.cn/rss/society.xml", "社会"),
