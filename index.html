@@ -55,13 +55,25 @@
     <section class="news-section" id="domestic">
       <div class="section-heading"><div><div class="section-kicker">LATEST UPDATES</div><h2>新闻速递</h2></div><span class="demo-note">演示卡片 · 非实时新闻</span></div>
       <div class="filter-row" id="filters">
-        <button class="filter active" data-filter="all">全部</button>
-        <button class="filter" data-filter="国内">国内</button>
-        <button class="filter" data-filter="国际">国际</button>
-        <button class="filter" data-filter="经济">经济</button>
-        <button class="filter" data-filter="科技">科技</button>
-        <button class="filter" data-filter="社会">社会</button>
-      </div>
+  <button class="filter active" data-filter="all">
+    全部 <span class="count" id="count-all">0</span>
+  </button>
+  <button class="filter" data-filter="国内">
+    国内 <span class="count" id="count-国内">0</span>
+  </button>
+  <button class="filter" data-filter="国际">
+    国际 <span class="count" id="count-国际">0</span>
+  </button>
+  <button class="filter" data-filter="经济">
+    经济 <span class="count" id="count-经济">0</span>
+  </button>
+  <button class="filter" data-filter="科技">
+    科技 <span class="count" id="count-科技">0</span>
+  </button>
+  <button class="filter" data-filter="社会">
+    社会 <span class="count" id="count-社会">0</span>
+  </button>
+</div>
       <div class="news-grid" id="newsGrid" aria-live="polite"></div>
       <div class="empty-state" id="emptyState" hidden>没有找到匹配的演示条目，请尝试其他关键词。</div>
     </section>
