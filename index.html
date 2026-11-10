@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="NewsHub 权威新闻聚合平台，关注国内、国际、经济、科技与社会新闻。">
+  <title>NewsHub｜权威新闻聚合</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="#"><span class="brand-mark">N</span><span>News<span class="brand-light">Hub</span><small>权威新闻 · 全球视野</small></span></a>
+    <nav class="main-nav" aria-label="主导航">
+      <a class="active" href="#top">首页</a><a href="#domestic">国内</a><a href="#world">国际</a>
+      <a href="#economy">经济</a><a href="#technology">科技</a><a href="#society">社会</a>
+    </nav>
+    <a class="source-link" href="#sources">媒体来源 <span>↗</span></a>
+  </header>
+
+  <main id="top" class="container">
+    <section class="welcome">
+      <div><div class="eyebrow"><span class="live-dot"></span> NEWSHUB · NEWS CENTER</div>
+        <h1>看见重要新闻，<br><span>理解正在发生的世界。</span></h1>
+        <p>聚合权威媒体公开信息，追踪时事、经济与科技动态。</p>
+      </div>
+      <div class="welcome-side"><div class="date-label">TODAY</div><div id="today" class="today">—</div><div class="welcome-note">保持关注 · 独立思考</div></div>
+    </section>
+
+    <section class="toolbar">
+      <div class="section-kicker">NEWS DESK <span>/ 新闻速览</span></div>
+      <label class="search"><span>⌕</span><input id="searchInput" type="search" placeholder="搜索新闻标题或关键词…" aria-label="搜索新闻"><kbd>↵</kbd></label>
+    </section>
+
+    <section class="lead-grid">
+      <article class="lead-card">
+        <div class="lead-top"><span class="tag tag-blue">今日关注</span><span class="muted">编辑精选 · 示例内容</span></div>
+        <div class="lead-content">
+          <div class="lead-category">FOCUS / 重点观察</div>
+          <h2>从权威信息出发，建立理解公共议题的多维视角</h2>
+          <p>NewsHub 首版展示页面。正式新闻内容将在完成数据源接入后更新；当前可通过下方媒体入口查看各平台最新发布。</p>
+          <a class="text-button" href="#sources">查看权威媒体来源 <span>→</span></a>
+        </div>
+        <div class="lead-footer"><span>NEWSHUB 编辑部</span><span>首版展示页面</span></div>
+      </article>
+      <aside class="side-panel">
+        <div class="panel-heading"><h3>新闻分类</h3><span>CHANNELS</span></div>
+        <a class="channel-row" href="#domestic"><span class="channel-icon">国</span><span><b>国内要闻</b><small>政策 · 时政 · 民生</small></span><i>→</i></a>
+        <a class="channel-row" href="#world"><span class="channel-icon purple">际</span><span><b>国际视野</b><small>国际 · 外交 · 全球</small></span><i>→</i></a>
+        <a class="channel-row" href="#economy"><span class="channel-icon green">经</span><span><b>经济观察</b><small>宏观 · 产业 · 市场</small></span><i>→</i></a>
+        <a class="channel-row" href="#technology"><span class="channel-icon orange">科</span><span><b>科技前沿</b><small>AI · 创新 · 数字化</small></span><i>→</i></a>
+        <a class="channel-row" href="#society"><span class="channel-icon red">社</span><span><b>社会民生</b><small>教育 · 文化 · 生活</small></span><i>→</i></a>
+      </aside>
+    </section>
+
+    <section class="news-section" id="domestic">
+      <div class="section-heading"><div><div class="section-kicker">LATEST UPDATES</div><h2>新闻速递</h2></div><span class="demo-note">演示卡片 · 非实时新闻</span></div>
+      <div class="filter-row" id="filters">
+        <button class="filter active" data-filter="all">全部</button>
+        <button class="filter" data-filter="国内">国内</button>
+        <button class="filter" data-filter="国际">国际</button>
+        <button class="filter" data-filter="经济">经济</button>
+        <button class="filter" data-filter="科技">科技</button>
+        <button class="filter" data-filter="社会">社会</button>
+      </div>
+      <div class="news-grid" id="newsGrid" aria-live="polite"></div>
+      <div class="empty-state" id="emptyState" hidden>没有找到匹配的演示条目，请尝试其他关键词。</div>
+    </section>
+
+    <section class="sources-section" id="sources">
+      <div class="section-heading"><div><div class="section-kicker">TRUSTED SOURCES</div><h2>权威媒体入口</h2></div><span class="demo-note">点击访问媒体官方网站</span></div>
+      <div class="source-grid">
+        <a class="source-card" href="http://www.people.com.cn/" target="_blank" rel="noopener noreferrer"><span class="source-symbol">人</span><span><b>人民日报 / 人民网</b><small>时政 · 国内 · 评论</small></span><i>↗</i></a>
+        <a class="source-card" href="https://www.news.cn/" target="_blank" rel="noopener noreferrer"><span class="source-symbol">新</span><span><b>新华社</b><small>国内 · 国际 · 财经</small></span><i>↗</i></a>
+        <a class="source-card" href="https://news.cctv.com/" target="_blank" rel="noopener noreferrer"><span class="source-symbol">央</span><span><b>央视新闻</b><small>时政 · 社会 · 国际</small></span><i>↗</i></a>
+        <a class="source-card" href="https://www.chinanews.com.cn/" target="_blank" rel="noopener noreferrer"><span class="source-symbol">中</span><span><b>中国新闻网</b><small>即时 · 社会 · 国际</small></span><i>↗</i></a>
+        <a class="source-card" href="https://www.gmw.cn/" target="_blank" rel="noopener noreferrer"><span class="source-symbol">光</span><span><b>光明网</b><small>教育 · 文化 · 理论</small></span><i>↗</i></a>
+      </div>
+    </section>
+
+    <section class="notice">
+      <span class="notice-icon">i</span><div><b>内容说明</b><p>当前版本为前端原型。新闻速递中的条目为演示内容，不代表真实报道；本网站不是上述媒体的官方网站，也不代表其立场。正式接入新闻后，将展示可核验的标题、来源、发布时间及原文链接，并遵守相关版权与使用条款。</p></div>
+    </section>
+  </main>
+
+  <footer><a class="footer-brand" href="#">NewsHub</a><span>权威信息聚合 · 保留来源 · 链接原文</span><span>© 2026 NewsHub</span></footer>
+  <script src="script.js"></script>
+</body>
+</html>
