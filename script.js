@@ -16,7 +16,7 @@ async function loadNews() {
     }
 
     const data = await response.json();
-    articles = data.articles || [];
+    articles = Array.isArray(data) ? data : (data.articles || []);
 
     renderNews();
     console.log("成功加载新闻：", articles.length, "条");
