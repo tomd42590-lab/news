@@ -1,44 +1,138 @@
-const articles = [
-  {category:"国内",title:"关注国家发展与民生建设：从权威媒体了解国内重要议题",source:"人民日报 / 人民网",time:"演示条目",url:"https://www.people.com.cn/"},
-  {category:"国际",title:"关注国际形势与全球治理：通过多方公开报道了解世界动态",source:"新华社",time:"演示条目",url:"https://www.news.cn/"},
-  {category:"经济",title:"观察宏观经济与产业发展：关注政策信息和经济运行",source:"中国新闻网",time:"演示条目",url:"https://www.chinanews.com.cn/"},
-  {category:"科技",title:"人工智能与科技创新：持续关注前沿技术发展",source:"央视新闻",time:"演示条目",url:"https://news.cctv.com/"},
-  {category:"社会",title:"教育、文化与社会民生：关注公共服务和社会生活",source:"光明网",time:"演示条目",url:"https://www.gmw.cn/"},
-  {category:"国内",title:"政策发布与公共信息：建议以政府部门和权威媒体原文为准",source:"新华社",time:"演示条目",url:"https://www.news.cn/"}
-];
+
+let articles = [];
 
 const grid = document.getElementById("newsGrid");
 const empty = document.getElementById("emptyState");
 const search = document.getElementById("searchInput");
+
 let currentFilter = "all";
+
+async function loadNews() {
+  try {
+    const response = await fetch("./data/news.json?t=" + Date.now());
+
+    if (!response.ok) {
+      throw new Error("新闻数据加载失败：" + response.status);
+    }
+
+    const data = await response.json();
+    articles = data.articles || [];
+
+    renderNews();
+    console.log("成功加载新闻：", articles.length, "条");
+
+  } catch (error) {
+    console.error(error);
+    grid.replaceChildren();
+
+    empty.hidden = false;
+    empty.textContent = "新闻加载失败，请稍后刷新页面。";
+  }
+}
 
 function renderNews() {
   const keyword = search.value.trim().toLowerCase();
-  const list = articles.filter(item =>
-    (currentFilter === "all" || item.category === currentFilter) &&
-    (item.title.toLowerCase().includes(keyword) || item.source.toLowerCase().includes(keyword))
-  );
-  grid.innerHTML = list.map(item => `
-    <article class="news-card">
-      <div class="card-meta"><span class="category-pill">${item.category}</span><time>${item.time}</time></div>
-      <h3>${item.title}</h3>
-      <div class="card-bottom"><span>来源：${item.source}</span><a href="${item.url}" target="_blank" rel="noopener noreferrer">访问来源 ↗</a></div>
-    </article>`).join("");
+
+  const list = articles.filter(item => {
+    const categoryMatch =
+      currentFilter === "all" ||
+      item.category === currentFilter;
+
+    const searchMatch =
+      (item.title || "").toLowerCase().includes(keyword) ||
+      (item.source || "").toLowerCase().includes(keyword);
+
+    return categoryMatch && searchMatch;
+  });
+
+  grid.replaceChildren();
+
+  list.forEach(item => {
+    const card = document.createElement("article");
+    card.className = "news-card";
+
+    const meta = document.createElement("div");
+    meta.className = "card-meta";
+
+    const category = document.createElement("span");
+    category.className = "category-pill";
+    category.textContent = item.category || "新闻";
+
+    const time = document.createElement("time");
+    const date = new Date(item.pubDate);
+
+    time.textContent = item.pubDate
+      ? (isNaN(date.getTime()) ? item.pubDate : date.toLocaleString("zh-CN"))
+      : "时间未知";
+
+    meta.append(category, time);
+
+    const title = document.createElement("h3");
+    title.textContent = item.title;
+
+    const bottom = document.createElement("div");
+    bottom.className = "card-bottom";
+
+    const source = document.createElement("span");
+    source.textContent = "来源：" + (item.source || "未知来源");
+
+    const link = document.createElement("a");
+    link.textContent = "阅读原文 ↗";
+
+    try {
+      const url = new URL(item.link);
+
+      if (url.protocol === "https:" || url.protocol === "http:") {
+        link.href = url.href;
+        link.target = "_blank";
+        link.rel = "noopener noreferrer";
+      } else {
+        link.textContent = "链接不可用";
+      }
+    } catch {
+      link.textContent = "链接不可用";
+    }
+
+    bottom.append(source, link);
+    card.append(meta, title, bottom);
+    grid.appendChild(card);
+  });
+
   empty.hidden = list.length !== 0;
+
+  if (list.length === 0) {
+    empty.textContent = "没有找到匹配的新闻。";
+  }
 }
 
+// 新闻分类筛选
 document.getElementById("filters").addEventListener("click", event => {
   const button = event.target.closest("button[data-filter]");
+
   if (!button) return;
+
   currentFilter = button.dataset.filter;
-  document.querySelectorAll(".filter").forEach(item => item.classList.toggle("active", item === button));
+
+  document.querySelectorAll(".filter").forEach(item => {
+    item.classList.toggle("active", item === button);
+  });
+
   renderNews();
 });
+
+// 新闻关键词搜索
 search.addEventListener("input", renderNews);
 
+// 显示当前日期
 const now = new Date();
-document.getElementById("today").textContent = new Intl.DateTimeFormat("zh-CN", {
-  year:"numeric", month:"long", day:"numeric", weekday:"long"
-}).format(now);
 
-renderNews();
+document.getElementById("today").textContent =
+  new Intl.DateTimeFormat("zh-CN", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+    weekday: "long"
+  }).format(now);
+
+// 加载新闻
+loadNews();
