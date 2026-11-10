@@ -1,4 +1,17 @@
+// 自动统计各栏目新闻数量
+function updateCounts() {
+  const categories = ["国内", "国际", "经济", "科技", "社会"];
 
+  document.getElementById("count-all").textContent = articles.length;
+
+  categories.forEach(category => {
+    const count = articles.filter(
+      item => item.category === category
+    ).length;
+
+    document.getElementById("count-" + category).textContent = count;
+  });
+}
 let articles = [];
 
 const grid = document.getElementById("newsGrid");
