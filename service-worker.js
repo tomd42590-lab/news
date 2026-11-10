@@ -1,5 +1,4 @@
-
-const CACHE_NAME = "newshub-v1";
+const CACHE_NAME = "newshub-v2";
 
 const STATIC_FILES = [
   "./",
@@ -11,7 +10,6 @@ const STATIC_FILES = [
   "./icons/icon-512.png"
 ];
 
-// 安装：缓存应用基础文件
 self.addEventListener("install", event => {
   event.waitUntil(
     caches.open(CACHE_NAME).then(cache => {
@@ -22,7 +20,6 @@ self.addEventListener("install", event => {
   self.skipWaiting();
 });
 
-// 激活：清理旧版本缓存
 self.addEventListener("activate", event => {
   event.waitUntil(
     caches.keys().then(keys => {
@@ -37,7 +34,6 @@ self.addEventListener("activate", event => {
   self.clients.claim();
 });
 
-// 请求：新闻数据优先联网，失败时读取缓存
 self.addEventListener("fetch", event => {
   const request = event.request;
   const url = new URL(request.url);
@@ -46,7 +42,7 @@ self.addEventListener("fetch", event => {
     return;
   }
 
-      if (url.pathname.endsWith("/data/news.json")) {
+  if (url.pathname.endsWith("/data/news.json")) {
     const cacheKey = new Request(url.origin + url.pathname);
 
     event.respondWith(
@@ -69,11 +65,7 @@ self.addEventListener("fetch", event => {
     );
     return;
   }
-    );
-    return;
-    }
 
-  // 其他静态文件优先使用缓存
   event.respondWith(
     caches.match(request).then(cached => {
       return cached || fetch(request);
