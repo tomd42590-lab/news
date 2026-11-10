@@ -133,7 +133,47 @@ document.getElementById("filters").addEventListener("click", event => {
 
   renderNews();
 });
+// 顶部导航和侧边分类入口
+document.querySelectorAll(".main-nav a, .side-panel a").forEach(link => {
+  link.addEventListener("click", event => {
+    const target = link.getAttribute("href");
 
+    // 首页：返回页面顶部
+    if (target === "#top") {
+      event.preventDefault();
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+      });
+      return;
+    }
+
+    const categoryMap = {
+      "#domestic": "国内",
+      "#world": "国际",
+      "#economy": "经济",
+      "#technology": "科技",
+      "#society": "社会"
+    };
+
+    const category = categoryMap[target];
+
+    if (!category) return;
+
+    event.preventDefault();
+
+    const button = document.querySelector(
+      `.filter[data-filter="${category}"]`
+    );
+
+    if (button) button.click();
+
+    document.getElementById("domestic").scrollIntoView({
+      behavior: "smooth",
+      block: "start"
+    });
+  });
+});
 // 新闻关键词搜索
 search.addEventListener("input", renderNews);
 
