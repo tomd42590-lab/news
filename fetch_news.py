@@ -5,26 +5,29 @@ import json
 import os
 import re
 import html
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 from email.utils import parsedate_to_datetime
 
-# 新闻源：名称、RSS地址、网站分类
+# 新闻源：名称、RSS地址、分类
 SOURCES = [
-    # 国内新闻
     ("中国新闻网", "https://www.chinanews.com.cn/rss/china.xml", "国内"),
-
-    # 国际新闻
     ("中国新闻网", "https://www.chinanews.com.cn/rss/world.xml", "国际"),
-
-    # 经济新闻
     ("中国新闻网", "https://www.chinanews.com.cn/rss/finance.xml", "经济"),
 
     # 科技新闻
-    ("新浪科技", "https://rss.sina.com.cn/tech/rollnews.xml", "科技"),
+    ("36氪", "https://36kr.com/feed", "科技"),
+    ("IT之家", "https://www.ithome.com/rss/", "科技"),
+    ("少数派", "https://sspai.com/feed", "科技"),
 
-    # 社会新闻
     ("中国新闻网", "https://www.chinanews.com.cn/rss/society.xml", "社会"),
 ]
+
+# 新闻时效限制
+MAX_AGE_DAYS = {
+    "科技": 14,
+    "默认": 30
+}
+
 
 def clean_text(text):
     if not text:
@@ -33,19 +36,55 @@ def clean_text(text):
     text = html.unescape(text)
     return re.sub(r"\s+", " ", text).strip()
 
+
 def get_tag(element, name):
     for child in element:
         if child.tag.split("}")[-1].lower() == name.lower():
             return child.text or ""
     return ""
 
+
 def parse_date(value):
     if not value:
-        return datetime.now(timezone.utc).isoformat()
+        return ""
+
+    value = value.strip()
+
     try:
-        return parsedate_to_datetime(value).isoformat()
+        date = datetime.fromisoformat(
+            value.replace("Z", "+00:00")
+        )
+    except ValueError:
+        try:
+            date = parsedate_to_datetime(value)
+        except Exception:
+            return ""
+
+    if date.tzinfo is None:
+        date = date.replace(tzinfo=timezone.utc)
+
+    return date.astimezone(timezone.utc).isoformat()
+
+
+def is_recent(pub_date, category):
+    try:
+        published = datetime.fromisoformat(
+            pub_date.replace("Z", "+00:00")
+        )
     except Exception:
-        return value
+        return False
+
+    now = datetime.now(timezone.utc)
+    days = MAX_AGE_DAYS.get(
+        category, MAX_AGE_DAYS["默认"]
+    )
+
+    return (
+        now - timedelta(days=days)
+        <= published
+        <= now + timedelta(days=1)
+    )
+
 
 def fetch_source(source_name, url, category):
     news_list = []
@@ -53,10 +92,14 @@ def fetch_source(source_name, url, category):
     try:
         request = urllib.request.Request(
             url,
-            headers={"User-Agent": "Mozilla/5.0 NewsHub/1.0"}
+            headers={
+                "User-Agent": "Mozilla/5.0 NewsHub/1.0"
+            }
         )
 
-        with urllib.request.urlopen(request, timeout=20) as response:
+        with urllib.request.urlopen(
+            request, timeout=25
+        ) as response:
             content = response.read()
 
         root = ET.fromstring(content)
@@ -68,6 +111,7 @@ def fetch_source(source_name, url, category):
                 continue
 
             title = clean_text(get_tag(item, "title"))
+
             link = get_tag(item, "link").strip()
 
             # 兼容 Atom 格式
@@ -87,24 +131,34 @@ def fetch_source(source_name, url, category):
                 get_tag(item, "pubDate")
                 or get_tag(item, "published")
                 or get_tag(item, "updated")
+                or get_tag(item, "date")
             )
 
-            if not title or not link:
+            published_at = parse_date(pub_date)
+
+            if not title or not link or not published_at:
+                continue
+
+            # 过滤过期新闻
+            if not is_recent(published_at, category):
                 continue
 
             news_list.append({
                 "title": title,
                 "link": link,
-                "pubDate": parse_date(pub_date),
+                "pubDate": published_at,
                 "description": description[:300],
                 "source": source_name,
                 "category": category
             })
 
-        print(f"成功：{source_name} - {category}，获取 {len(news_list)} 条")
+        print(
+            f"成功：{source_name} - {category}，"
+            f"获取 {len(news_list)} 条新闻"
+        )
 
     except Exception as e:
-        print(f"失败：{source_name} - {category}：{e}")
+        print(f"失败：{source_name}：{e}")
 
     return news_list
 
@@ -114,7 +168,9 @@ def main():
     seen_links = set()
 
     for source_name, url, category in SOURCES:
-        news = fetch_source(source_name, url, category)
+        news = fetch_source(
+            source_name, url, category
+        )
 
         for item in news:
             if item["link"] not in seen_links:
@@ -123,16 +179,32 @@ def main():
 
     # 按发布时间排序
     all_news.sort(
-        key=lambda x: x["pubDate"],
+        key=lambda x: datetime.fromisoformat(
+            x["pubDate"].replace("Z", "+00:00")
+        ),
         reverse=True
     )
 
     os.makedirs("data", exist_ok=True)
 
-    with open("data/news.json", "w", encoding="utf-8") as f:
-        json.dump(all_news, f, ensure_ascii=False, indent=2)
+    with open(
+        "data/news.json", "w", encoding="utf-8"
+    ) as f:
+        json.dump(
+            all_news,
+            f,
+            ensure_ascii=False,
+            indent=2
+        )
 
-    print(f"\n采集完成！共获取 {len(all_news)} 条新闻")
+    tech_count = sum(
+        1 for item in all_news
+        if item["category"] == "科技"
+    )
+
+    print("\n采集完成！")
+    print(f"新闻总数：{len(all_news)}")
+    print(f"科技新闻：{tech_count}")
     print("更新时间：", datetime.now().isoformat())
 
 
